@@ -2,9 +2,6 @@
 # Created by https://www.gitignore.io/api/eclipse
 report.txt
 
-
-reated by https://www.gitignore.io/api/java
-
 ### Java ###
 # Compiled class file
 *.class
@@ -19,7 +16,6 @@ reated by https://www.gitignore.io/api/java
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
@@ -93,6 +89,5 @@ target/
 
 # Annotation Processing
 .apt_generated
-
 
 # End of https://www.gitignore.io/api/eclipse
