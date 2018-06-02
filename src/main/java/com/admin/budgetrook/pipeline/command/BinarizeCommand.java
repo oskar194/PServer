@@ -1,30 +1,27 @@
 package com.admin.budgetrook.pipeline.command;
 
-import org.apache.log4j.Logger;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import com.admin.budgetrook.pipeline.input.MatPayload;
-import com.lowagie.text.html.simpleparser.Img;
 
 public class BinarizeCommand implements Command<MatPayload> {
-	private static final Logger log = Logger.getLogger(BinarizeCommand.class);
 
 	public MatPayload execute(MatPayload input) {
 		Mat src = input.getValue();
-		try {
-			Imgproc.cvtColor(src, src, Imgproc.COLOR_BGR2GRAY);
-		} catch (Exception e) {
-			log.error("Error m =" + e.getMessage());
-			log.info("Skipping...");
+		Mat gray = new Mat();
+		Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
+		Imgproc.GaussianBlur(gray, gray, new Size(7, 7), 0);
+		int blockSize = (src.width() + src.height()) / 200;
+		if(blockSize < 2) {
+			blockSize = 3;
+		} else if (blockSize % 2 != 1){
+			blockSize++;
 		}
-		// Imgproc.threshold(src, src, 200, 255, Imgproc.THRESH_BINARY |
-		// Imgproc.THRESH_OTSU);
-//		Imgproc.adaptiveThreshold(src, src, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, 10, 10);
-		Imgproc.threshold(src,src,95,255,Imgproc.THRESH_BINARY_INV);
-//		Core.bitwise_not(src, src);
-		input.setValue(src);
+		Imgproc.adaptiveThreshold(gray, gray, 255, Imgproc.ADAPTIVE_THRESH_MEAN_C, Imgproc.THRESH_BINARY, blockSize, 10);
+		Imgproc.threshold(gray, gray, 0, 255, Imgproc.THRESH_BINARY_INV);
+		input.setValue(gray);
 		return input;
 	}
 

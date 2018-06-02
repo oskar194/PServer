@@ -10,6 +10,7 @@ public class MatPayload extends Payload<Mat>{
 
 	public MatPayload(Mat value) {
 		super(value);
+		this.setOriginal(value.clone());
 	}
 
 }

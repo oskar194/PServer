@@ -3,36 +3,36 @@ package com.admin.budgetrook.pipeline.manager;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.admin.budgetrook.pipeline.step.Step;
+import com.admin.budgetrook.pipeline.command.Command;
 
 public class Pipeline<T> {
-	private List<Step<T>> steps;
+	private List<Command<T>> commands;
 	private T partial;
 
-	public List<Step<T>> getSteps() {
-		return steps;
+	public List<Command<T>> getcommands() {
+		return commands;
 	}
 
-	public void setSteps(List<Step<T>> steps) {
-		this.steps = steps;
+	public void setcommands(List<Command<T>> commands) {
+		this.commands = commands;
 	}
-	
-	public Pipeline<T> add(Step<T> step){
-		this.steps.add(step);
+
+	public Pipeline<T> add(Command<T> Command) {
+		this.commands.add(Command);
 		return this;
 	}
 
 	public Pipeline() {
-		this.steps = new ArrayList<Step<T>>();
+		this.commands = new ArrayList<Command<T>>();
 	}
 
-	public Pipeline(List<Step<T>> steps) {
-		this.steps = steps;
+	public Pipeline(List<Command<T>> commands) {
+		this.commands = commands;
 	}
 
 	public T executePipeline(T input) {
-		for (Step<T> step : steps) {
-			partial = step.executeStep(input);
+		for (Command<T> Command : commands) {
+			partial = Command.execute(input);
 			input = partial;
 		}
 		return input;

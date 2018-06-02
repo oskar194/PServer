@@ -18,6 +18,6 @@ public class PipelineManager {
 	public String process(File source, File destination) {
 		File partial = ocvManager.process(source, destination);
 		return tessManager.doOcr(partial);
-//		return "";
+//		return "SKIPPED OCR";
 	}
 }

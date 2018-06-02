@@ -1,11 +1,10 @@
 package com.admin.budgetrook.pipeline.command;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
-import org.apache.log4j.Logger;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
@@ -17,8 +16,113 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 class CommandHelper {
-	private static final Logger log = Logger.getLogger(CommandHelper.class);
+	private static class MatOfPointAreaComparator implements Comparator<MatOfPoint> {
+		@Override
+		public int compare(MatOfPoint left, MatOfPoint right) {
+			if (area(left) > area(right)) {
+				return 1;
+			} else if (area(left) < area(right)) {
+				return -1;
+			}
+			return 0;
+		}
+
+		private double area(MatOfPoint mop) {
+			return Imgproc.contourArea(mop);
+		}
+	}
+
+	private static class MatOfPointAreaWidth implements Comparator<MatOfPoint> {
+		@Override
+		public int compare(MatOfPoint left, MatOfPoint right) {
+			if (width(left) > width(right)) {
+				return 1;
+			} else if (width(left) < width(right)) {
+				return -1;
+			}
+			return 0;
+		}
+
+		private double width(MatOfPoint mop) {
+			return Imgproc.boundingRect(mop).width;
+		}
+	}
 	
+	private static class MatOfPointAreaHeight implements Comparator<MatOfPoint> {
+		@Override
+		public int compare(MatOfPoint left, MatOfPoint right) {
+			if (height(left) > height(right)) {
+				return 1;
+			} else if (height(left) < height(right)) {
+				return -1;
+			}
+			return 0;
+		}
+
+		private double height(MatOfPoint mop) {
+			return Imgproc.boundingRect(mop).height;
+		}
+	}
+
+	private static class RectAreaComparator implements Comparator<Rect> {
+		@Override
+		public int compare(Rect left, Rect right) {
+			if (area(left) > area(right)) {
+				return 1;
+			} else if (area(left) < area(right)) {
+				return -1;
+			}
+			return 0;
+		}
+
+		private double area(Rect rr) {
+			return rr.width * rr.height;
+		}
+
+	}
+
+	private static class RectHeightComparator implements Comparator<Rect> {
+		@Override
+		public int compare(Rect left, Rect right) {
+			if (height(left) > height(right)) {
+				return 1;
+			} else if (height(left) < height(right)) {
+				return -1;
+			}
+			return 0;
+		}
+
+		private double height(Rect rr) {
+			return rr.height;
+		}
+	}
+
+	public static Rect getMaxHeightRect(Collection<Rect> rectList) {
+		return Collections.max(rectList, new RectHeightComparator());
+	}
+	
+	public static Rect getMinAreaRect(Collection<Rect> rectList) {
+		return Collections.min(rectList, new RectAreaComparator());
+	}
+	
+	public static MatOfPoint getMaxContourArea(Collection<MatOfPoint> contours) {
+		if(contours.isEmpty()) {
+			return null;
+		}
+		return Collections.max(contours, new MatOfPointAreaComparator());
+	}
+
+	public static MatOfPoint getMaxContourWidth(Collection<MatOfPoint> contours) {
+		return Collections.max(contours, new MatOfPointAreaWidth());
+	}
+	
+	public static MatOfPoint getMaxContourHeight(Collection<MatOfPoint> contours) {
+		if(contours.isEmpty()) {
+			return null;
+		}
+		return Collections.max(contours, new MatOfPointAreaHeight());
+	}
+
 	static RotatedRect boundText(Mat src) {
 		Mat points = Mat.zeros(src.size(), src.type());
 		Core.findNonZero(src, points);
@@ -58,31 +162,9 @@ class CommandHelper {
 		return result;
 	}
 
-	static List<Rect> detectLettersBounding(Mat img) {
-		int maxWidth = 750;
-		int maxHeight = 15;
-		double min = 100;
-		List<Rect> boundingRect = new ArrayList<Rect>();
-		Mat imageSobel = new Mat();
-		Mat imageTreshold = new Mat();
-		Mat element = new Mat();
-
-		Imgproc.Sobel(img, imageSobel, CvType.CV_8U, 1, 0, 3, 1, 0, Core.BORDER_DEFAULT);
-		element = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(maxWidth, maxHeight));
-		Imgproc.threshold(imageSobel, imageTreshold, 0, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
-		Imgproc.morphologyEx(imageSobel, imageSobel, Imgproc.MORPH_CLOSE, element);
-		List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		Imgproc.findContours(imageTreshold, contours, new Mat(), 0, 1);
-		for (MatOfPoint contour : contours) {
-			if (contour.size().height >= min) {
-				log.info("Height: " + contour.size().height);
-				log.info("Width: " + contour.size().width);
-				MatOfPoint2f contour_poly = new MatOfPoint2f();
-				Imgproc.approxPolyDP(new MatOfPoint2f(contour.toArray()), contour_poly, 3, true);
-				Rect appRect = Imgproc.boundingRect(new MatOfPoint(contour_poly.toArray()));
-				boundingRect.add(appRect);
-			}
-		}
-		return boundingRect;
+	static Mat cropRectangle(Mat src, Rect rect) {
+		Mat.zeros(rect.size(), src.type()).copyTo(new Mat(src, rect));
+		return src;
 	}
+
 }
