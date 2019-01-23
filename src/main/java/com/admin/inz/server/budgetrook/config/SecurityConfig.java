@@ -25,8 +25,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserDetailsService userDetailsService;
 
-	@Autowired
-	private MySavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler;
+//	@Autowired
+//	private MySavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -42,8 +42,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeRequests().and().authorizeRequests()
-				.antMatchers("/login*", "/logout*", "/register*").permitAll().anyRequest().hasAuthority("READ_PRIV")
-				.and().httpBasic().and()
+				.antMatchers("/login*", "/logout*", "/register*", "/uploadPhoto*").permitAll()
+				.and()
+//				.anyRequest().hasAuthority("READ_PRIV")
+//				.and().httpBasic().and()
 				// .successHandler(authenticationSuccessHandler)
 				// .failureHandler(new SimpleUrlAuthenticationFailureHandler())
 				// .and()
