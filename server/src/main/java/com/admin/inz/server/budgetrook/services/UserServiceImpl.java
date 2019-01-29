@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
 	PasswordEncoder passwordEncoder;
 
 	@Override
-	public User register(UserDto user) {
+	public User register(UserDto user) throws RuntimeException {
 		if (userExist(user.getEmail())) {
 			throw new RuntimeException("User with email " + user.getEmail() + " exist!");
 		}
@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 		userEnt.setName(user.getFirstName());
 		userEnt.setPassword(passwordEncoder.encode(user.getPassword()));
 		userEnt.setRoles(Arrays.asList(roleRepo.findByName("ROLE_USER")));
-
+		userEnt.setEnabled(true);
 		return userRepo.save(userEnt);
 
 	}

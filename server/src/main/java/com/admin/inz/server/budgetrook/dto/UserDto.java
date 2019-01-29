@@ -9,10 +9,12 @@ public class UserDto {
 	private String firstName;
 	@JsonProperty
 	private String lastName;
-	@JsonProperty
+	@JsonProperty(value="login")
 	private String email;
 	@JsonProperty
 	private String password;
+	@JsonProperty
+	private Long externalId;
 
 	public String getFirstName() {
 		return firstName;
@@ -46,4 +48,12 @@ public class UserDto {
 		this.password = password;
 	}
 
+	public Long getExternalId() {
+		return externalId;
+	}
+
+	public void setExternalId(Long externalId) {
+		this.externalId = externalId;
+	}
+	
 }

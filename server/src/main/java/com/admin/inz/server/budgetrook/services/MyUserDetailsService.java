@@ -27,6 +27,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		System.out.println(email);
 		try {
 			final User user = userRepository.findByEmail(email);
 			if (user == null) {
@@ -40,6 +41,8 @@ public class MyUserDetailsService implements UserDetailsService {
 	}
 
 	private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
+		System.out.println(roles);
+		
 		return getGrantedAuthorities(getPrivileges(roles));
 	}
 
@@ -55,6 +58,7 @@ public class MyUserDetailsService implements UserDetailsService {
 		List<String> names = new ArrayList<String>();
 		List<Privilege> privileges = new ArrayList<Privilege>();
 		for (Role role : roles) {
+			names.add(role.getName());
 			privileges.addAll(role.getPrivileges());
 		}
 		for (Privilege privilege : privileges) {

@@ -14,6 +14,9 @@ import com.admin.budgetrook.pipeline.command.DeskewCommand;
 import com.admin.budgetrook.pipeline.command.DetectTextBlocksCommand;
 import com.admin.budgetrook.pipeline.command.ExtractBiggestRectangleCommand;
 import com.admin.budgetrook.pipeline.command.ExtractCashCommand;
+import com.admin.budgetrook.pipeline.command.RemoveBarcodeCommand;
+import com.admin.budgetrook.pipeline.command.RotateCommand;
+import com.admin.budgetrook.pipeline.command.WritePreviewCommand;
 import com.admin.budgetrook.pipeline.input.MatPayload;
 import com.admin.budgetrook.pipeline.manager.Pipeline;
 
@@ -30,10 +33,13 @@ public class OpenCVManager {
 		processingPipeline
 		.add(new BinarizeCommand())
 		.add(new DetectTextBlocksCommand())
+//		.add(new RotateCommand())
+//		.add(new WritePreviewCommand())
 		.add(new DenoiseCommand())
-		.add(new ExtractBiggestRectangleCommand())
-		.add(new ExtractCashCommand())
-		.add(new ExtractBiggestRectangleCommand())
+		.add(new RemoveBarcodeCommand())
+//		.add(new ExtractBiggestRectangleCommand())
+//		.add(new ExtractCashCommand())
+//		.add(new ExtractBiggestRectangleCommand())
 		.add(new BoldenTextCommand());
 	}
 

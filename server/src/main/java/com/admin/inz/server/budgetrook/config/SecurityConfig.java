@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 import com.admin.inz.server.budgetrook.security.MySavedRequestAwareAuthenticationSuccessHandler;
+import com.admin.inz.server.budgetrook.security.RestAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
@@ -24,6 +25,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private UserDetailsService userDetailsService;
+	@Autowired
+	private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+	@Autowired
+	private MySavedRequestAwareAuthenticationSuccessHandler mySuccessHandler;
+	@Autowired
+	private SimpleUrlAuthenticationFailureHandler myFailureHandler;
+	
 
 //	@Autowired
 //	private MySavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler;
@@ -38,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-
+/*
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeRequests().and().authorizeRequests()
@@ -51,7 +59,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// .and()
 				.logout();
 	}
-
+*/
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+    	httpSecurity
+        .csrf().disable()
+        .exceptionHandling()
+        .authenticationEntryPoint(restAuthenticationEntryPoint)
+        .and()
+        .authorizeRequests()
+        .antMatchers("/register/**").permitAll()
+        .antMatchers("/category/**").authenticated()
+        .antMatchers("/admin/**").hasRole("ADMIN")
+        .antMatchers("/console/**").permitAll()
+        .and()
+        .formLogin()
+        .successHandler(mySuccessHandler)
+        .failureHandler(myFailureHandler)
+        .and()
+        .logout();
+ 
+        httpSecurity.headers().frameOptions().disable();
+    }
+    
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/resources/**");

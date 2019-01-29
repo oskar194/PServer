@@ -9,6 +9,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import com.admin.budgetrook.pipeline.input.MatPayload;
@@ -20,17 +21,20 @@ public class ExtractCashCommand implements Command<MatPayload> {
 		Mat img = input.getValue();
 		int x = 0;
 		int y = (int) (img.height() * 0.46);
+		//WORKING int y = (int) (img.height() * 0.46);
 		int w = (int) (img.width());
 		int h = (int) (img.height() * 0.39);
+		//WORKING int h = (int) (img.height() * 0.39);
 		img = new Mat(img, new Rect(x, y, w, h));
-			img = extractFeatures(img);
+		img = extractFeatures(img);
 		input.setValue(img);
 		return input;
 	}
 
 	private Mat extractFeatures(Mat img) {
 		Mat eroded = new Mat();
-		Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 4));
+		Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(1, 10));
+		// WORKING Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 4));
 		Imgproc.erode(img, eroded, kernel, new Point(0, 0), 4);
 		kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(img.width()*2, img.height()* 0.15));
 		Mat dilated = new Mat();

@@ -7,6 +7,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
 import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import com.admin.budgetrook.pipeline.input.MatPayload;
@@ -15,10 +16,13 @@ public class DenoiseCommand implements Command<MatPayload> {
 
 	public MatPayload execute(MatPayload input) {
 		Mat img = input.getValue();
+		
 		List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-		Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(15, 15));
+//		WROKING Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(15, 15));
+		Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(18,18));
 		Mat dilated = new Mat();
 		Imgproc.dilate(img, dilated, kernel);
+		
 		Imgproc.findContours(dilated, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
 		List<Rect> rrList = new ArrayList<Rect>(contours.size());
 		double meanHeight = 0;

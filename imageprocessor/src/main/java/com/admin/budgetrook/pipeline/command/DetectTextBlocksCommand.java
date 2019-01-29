@@ -8,6 +8,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import com.admin.budgetrook.pipeline.input.MatPayload;
@@ -21,8 +22,10 @@ public class DetectTextBlocksCommand implements Command<MatPayload> {
 		double imgHeight = img.size().height;
 		double imgWidth = img.size().width;
 		Mat dilated = new Mat();
-		Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(20, 1));
+//		WORKING Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(10, 1));
+		Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(50, 1));
 		Imgproc.dilate(img, dilated, kernel);
+		
 		List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		Mat accumulated = new Mat(img.size(), img.type());
 		Imgproc.findContours(dilated, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
@@ -40,6 +43,7 @@ public class DetectTextBlocksCommand implements Command<MatPayload> {
 				continue;
 			}
 			new Mat(img, boundingRect).copyTo(new Mat(accumulated, boundingRect));
+			
 			input.setValue(accumulated);
 		}
 		return input;
